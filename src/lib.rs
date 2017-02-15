@@ -96,6 +96,7 @@ extern crate bufstream;
 extern crate byteorder;
 extern crate chrono;
 extern crate crypto;
+extern crate data_encoding;
 #[cfg(feature = "ssl")]
 extern crate openssl;
 extern crate rand;
