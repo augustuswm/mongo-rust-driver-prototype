@@ -7,7 +7,8 @@ use mongodb::topology::monitor::IsMasterResult;
 use mongodb::topology::server::Server;
 
 use json::sdam::reader::SuiteContainer;
-use rustc_serialize::json::Json;
+// use rustc_serialize::json::Json;
+use serde_json::Value as Json;
 
 use std::collections::HashMap;
 

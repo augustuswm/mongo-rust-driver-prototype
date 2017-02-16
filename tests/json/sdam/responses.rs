@@ -1,6 +1,8 @@
+use bson;
 use bson::{Bson, Document};
 use mongodb::connstring::{self, Host};
-use rustc_serialize::json::Json;
+// use rustc_serialize::json::Json;
+use serde_json::Value as Json;
 
 pub struct Responses {
     pub data: Vec<(Host, Document)>,
@@ -26,7 +28,7 @@ impl Responses {
 
             let ismaster = val_or_err!(
                 inner_array[1],
-                Json::Object(ref obj) => Bson::from_json(&Json::Object(obj.clone())),
+                Json::Object(ref obj) => bson::to_bson(&Json::Object(obj.clone())).unwrap(),
                 "Response item must contain the ismaster object as \
                 the second argument.");
 

@@ -1,4 +1,7 @@
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json;
+use serde_json::Map;
+use serde_json::Value as Json;
 use std::fs::File;
 
 use super::responses::Responses;
@@ -10,7 +13,7 @@ pub struct Phase {
 }
 
 impl Phase {
-    fn from_json(object: &Object) -> Result<Phase, String> {
+    fn from_json(object: &Map<String, Json>) -> Result<Phase, String> {
         let operation = val_or_err!(object.get("responses"),
                                     Some(&Json::Array(ref array)) =>
                                     try!(Responses::from_json(array)),
@@ -33,7 +36,7 @@ pub struct Suite {
     pub phases: Vec<Phase>,
 }
 
-fn get_phases(object: &Object) -> Result<Vec<Phase>, String> {
+fn get_phases(object: &Map<String, Json>) -> Result<Vec<Phase>, String> {
     let array = val_or_err!(object.get("phases"),
                             Some(&Json::Array(ref array)) => array.clone(),
                             "No `phases` array found");
@@ -65,7 +68,7 @@ impl SuiteContainer for Json {
     fn from_file(path: &str) -> Result<Json, String> {
         let mut file = File::open(path).expect(&format!("Unable to open file: {}", path));
 
-        Ok(Json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
+        Ok(serde_json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
     }
 
     fn get_suite(&self) -> Result<Suite, String> {

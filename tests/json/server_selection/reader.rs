@@ -3,7 +3,9 @@ use json::FromJsonResult;
 use mongodb::common::ReadPreference;
 use mongodb::topology::TopologyType;
 
-use rustc_serialize::json::Json;
+// use rustc_serialize::json::Json;
+use serde_json;
+use serde_json::Value as Json;
 
 use std::fs::File;
 use std::str::FromStr;
@@ -45,7 +47,7 @@ pub trait SuiteContainer: Sized {
 impl SuiteContainer for Json {
     fn from_file(path: &str) -> Result<Json, String> {
         let mut file = File::open(path).expect(&format!("Unable to open file: {}", path));
-        Ok(Json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
+        Ok(serde_json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
     }
 
     fn get_suite(&self) -> Result<Suite, String> {

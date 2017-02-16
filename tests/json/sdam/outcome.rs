@@ -2,7 +2,9 @@ use mongodb::connstring::{self, Host};
 use mongodb::topology::TopologyType;
 use mongodb::topology::server::ServerType;
 
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json::Map;
+use serde_json::Value as Json;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -18,7 +20,7 @@ pub struct Outcome {
 }
 
 impl Outcome {
-    pub fn from_json(object: &Object) -> Result<Outcome, String> {
+    pub fn from_json(object: &Map<String, Json>) -> Result<Outcome, String> {
         let mut servers = HashMap::new();
 
         if let Some(&Json::Object(ref obj)) = object.get("servers") {

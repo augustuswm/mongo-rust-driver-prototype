@@ -1,5 +1,8 @@
+use bson;
 use bson::{Bson, Document};
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json::Map;
+use serde_json::Value as Json;
 
 pub struct Collection {
     pub name: Option<String>,
@@ -12,9 +15,9 @@ pub struct Outcome {
 }
 
 impl Outcome {
-    pub fn from_json(object: &Object) -> Result<Outcome, String> {
+    pub fn from_json(object: &Map<String, Json>) -> Result<Outcome, String> {
         let result = match object.get("result") {
-            Some(json) => Bson::from_json(json),
+            Some(json) => bson::to_bson(json).unwrap(),
             None => Bson::Null,
         };
 
@@ -40,7 +43,7 @@ impl Outcome {
         let mut data = vec![];
 
         for json in array {
-            match Bson::from_json(json) {
+            match bson::to_bson(json).unwrap() {
                 Bson::Document(doc) => data.push(doc),
                 _ => return Err(String::from("`data` array must contain only objects")),
             }

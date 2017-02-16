@@ -1,5 +1,9 @@
+use bson;
 use bson::{Bson, Document};
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json;
+use serde_json::Map;
+use serde_json::Value as Json;
 use std::fs::File;
 
 use super::arguments::Arguments;
@@ -11,7 +15,7 @@ pub struct Test {
 }
 
 impl Test {
-    fn from_json(object: &Object) -> Result<Test, String> {
+    fn from_json(object: &Map<String, Json>) -> Result<Test, String> {
         macro_rules! res_or_err {
             ($exp:expr) => { match $exp {
                 Ok(a) => a,
@@ -73,14 +77,14 @@ pub struct Suite {
     pub tests: Vec<Test>,
 }
 
-fn get_data(object: &Object) -> Result<Vec<Document>, String> {
+fn get_data(object: &Map<String, Json>) -> Result<Vec<Document>, String> {
     let array = val_or_err!(object.get("data"),
                             Some(&Json::Array(ref arr)) => arr.clone(),
                             "No `data` array found");
     let mut data = vec![];
 
     for json in array {
-        match Bson::from_json(&json) {
+        match bson::to_bson(&json).unwrap() {
             Bson::Document(doc) => data.push(doc),
             _ => return Err(String::from("`data` array must contain only objects")),
         }
@@ -89,7 +93,7 @@ fn get_data(object: &Object) -> Result<Vec<Document>, String> {
     Ok(data)
 }
 
-fn get_tests(object: &Object) -> Result<Vec<Test>, String> {
+fn get_tests(object: &Map<String, Json>) -> Result<Vec<Test>, String> {
     let array = val_or_err!(object.get("tests"),
                             Some(&Json::Array(ref array)) => array.clone(),
                             "No `tests` array found");
@@ -112,8 +116,8 @@ fn get_tests(object: &Object) -> Result<Vec<Test>, String> {
     Ok(tests)
 }
 
-pub trait SuiteContainer: Sized {
-    fn from_file(path: &str) -> Result<Self, String>;
+pub trait SuiteContainer {
+    fn from_file(path: &str) -> Result<Json, String>;
     fn get_suite(&self) -> Result<Suite, String>;
 }
 
@@ -121,7 +125,7 @@ impl SuiteContainer for Json {
     fn from_file(path: &str) -> Result<Json, String> {
         let mut file = File::open(path).expect(&format!("Unable to open file: {}", path));
 
-        Ok(Json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
+        Ok(serde_json::from_reader(&mut file).expect(&format!("Invalid JSON file: {}", path)))
     }
 
     fn get_suite(&self) -> Result<Suite, String> {

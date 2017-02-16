@@ -1,19 +1,20 @@
+use bson;
 use bson::Bson;
 use json::FromJson;
 
 use mongodb::coll::options::{AggregateOptions, CountOptions, FindOneAndDeleteOptions,
                              FindOneAndUpdateOptions, FindOptions, ReturnDocument};
 
-use rustc_serialize::json::{Object, Json};
+// use rustc_serialize::json::{Object, Json};
+use serde_json::Map;
+use serde_json::Value as Json;
 
 impl FromJson for AggregateOptions {
-    fn from_json(object: &Object) -> AggregateOptions {
+    fn from_json(object: &Map<String, Json>) -> AggregateOptions {
         let mut options = AggregateOptions::new();
 
         options.batch_size = match object.get("batchSize") {
-            Some(&Json::I64(n)) => n as i32,
-            Some(&Json::U64(n)) => n as i32,
-            Some(&Json::F64(n)) => n as i32,
+            Some(&Json::Number(ref n)) => n.as_i64().unwrap() as i32,
             _ => options.batch_size,
         };
 
@@ -22,20 +23,16 @@ impl FromJson for AggregateOptions {
 }
 
 impl FromJson for CountOptions {
-    fn from_json(object: &Object) -> CountOptions {
+    fn from_json(object: &Map<String, Json>) -> CountOptions {
         let mut options = CountOptions::new();
 
         options.skip = match object.get("skip") {
-            Some(&Json::I64(n)) => Some(n),
-            Some(&Json::U64(n)) => Some(n as i64),
-            Some(&Json::F64(n)) => Some(n as i64),
+            Some(&Json::Number(ref n)) => n.as_i64(),
             _ => options.skip,
         };
 
         options.limit = match object.get("limit") {
-            Some(&Json::I64(n)) => Some(n),
-            Some(&Json::U64(n)) => Some(n as i64),
-            Some(&Json::F64(n)) => Some(n as i64),
+            Some(&Json::Number(ref n)) => n.as_i64(),
             _ => options.limit,
         };
 
@@ -44,33 +41,27 @@ impl FromJson for CountOptions {
 }
 
 impl FromJson for FindOptions {
-    fn from_json(object: &Object) -> FindOptions {
+    fn from_json(object: &Map<String, Json>) -> FindOptions {
         let mut options = FindOptions::new();
 
-        let f = |x| Some(Bson::from_json(x));
+        let f = |x| bson::to_bson(x).ok();
         options.sort = match object.get("sort").and_then(f) {
             Some(Bson::Document(doc)) => Some(doc),
             _ => None,
         };
 
         options.skip = match object.get("skip") {
-            Some(&Json::I64(n)) => Some(n),
-            Some(&Json::U64(n)) => Some(n as i64),
-            Some(&Json::F64(n)) => Some(n as i64),
+            Some(&Json::Number(ref n)) => n.as_i64(),
             _ => options.skip,
         };
 
         options.limit = match object.get("limit") {
-            Some(&Json::I64(n)) => Some(n),
-            Some(&Json::U64(n)) => Some(n as i64),
-            Some(&Json::F64(n)) => Some(n as i64),
+            Some(&Json::Number(ref n)) => n.as_i64(),
             _ => options.limit,
         };
 
         options.batch_size = match object.get("batchSize") {
-            Some(&Json::I64(n)) => Some(n as i32),
-            Some(&Json::U64(n)) => Some(n as i32),
-            Some(&Json::F64(n)) => Some(n as i32),
+            Some(&Json::Number(ref n)) => Some(n.as_i64().unwrap() as i32),
             _ => options.batch_size,
         };
         options
@@ -79,14 +70,14 @@ impl FromJson for FindOptions {
 }
 
 impl FromJson for FindOneAndDeleteOptions {
-    fn from_json(object: &Object) -> FindOneAndDeleteOptions {
+    fn from_json(object: &Map<String, Json>) -> FindOneAndDeleteOptions {
         let mut options = FindOneAndDeleteOptions::new();
 
-        if let Some(Bson::Document(projection)) = object.get("projection").map(Bson::from_json) {
+        if let Some(Bson::Document(projection)) = object.get("projection").map(|x| bson::to_bson(x).unwrap()) {
             options.projection = Some(projection);
         }
 
-        if let Some(Bson::Document(sort)) = object.get("sort").map(Bson::from_json) {
+        if let Some(Bson::Document(sort)) = object.get("sort").map(|x| bson::to_bson(x).unwrap()) {
             options.sort = Some(sort);
         }
 
@@ -95,14 +86,14 @@ impl FromJson for FindOneAndDeleteOptions {
 }
 
 impl FromJson for FindOneAndUpdateOptions {
-    fn from_json(object: &Object) -> FindOneAndUpdateOptions {
+    fn from_json(object: &Map<String, Json>) -> FindOneAndUpdateOptions {
         let mut options = FindOneAndUpdateOptions::new();
 
-        if let Some(Bson::Document(projection)) = object.get("projection").map(Bson::from_json) {
+        if let Some(Bson::Document(projection)) = object.get("projection").map(|x| bson::to_bson(x).unwrap()) {
             options.projection = Some(projection);
         }
 
-        if let Some(Bson::String(s)) = object.get("returnDocument").map(Bson::from_json) {
+        if let Some(Bson::String(s)) = object.get("returnDocument").map(|x| bson::to_bson(x).unwrap()) {
             match s.as_ref() {
                 "After" => options.return_document = Some(ReturnDocument::After),
                 "Before" => options.return_document = Some(ReturnDocument::Before),
@@ -111,11 +102,11 @@ impl FromJson for FindOneAndUpdateOptions {
         }
 
 
-        if let Some(Bson::Document(sort)) = object.get("sort").map(Bson::from_json) {
+        if let Some(Bson::Document(sort)) = object.get("sort").map(|x| bson::to_bson(x).unwrap()) {
             options.sort = Some(sort);
         }
 
-        if let Some(Bson::Boolean(upsert)) = object.get("upsert").map(Bson::from_json) {
+        if let Some(Bson::Boolean(upsert)) = object.get("upsert").map(|x| bson::to_bson(x).unwrap()) {
             options.upsert = Some(upsert);
         }
 

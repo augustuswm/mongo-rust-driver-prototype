@@ -1,7 +1,9 @@
 use mongodb::connstring::{self, Host};
 use mongodb::topology::server::ServerType;
 
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json::Map;
+use serde_json::Value as Json;
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
@@ -14,13 +16,13 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn from_json(object: &Object) -> Result<Server, String> {
+    pub fn from_json(object: &Map<String, Json>) -> Result<Server, String> {
         let address = val_or_err!(object.get("address"),
                                   Some(&Json::String(ref s)) => s.to_owned(),
                                   "server must have an address.");
 
         let rtt = val_or_err!(object.get("avg_rtt_ms"),
-                              Some(&Json::U64(v)) => v as i64,
+                              Some(&Json::Number(ref v)) => v.as_i64().unwrap(),
                               "server must have an average rtt.");
 
         let mut tags = BTreeMap::new();

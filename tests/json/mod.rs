@@ -6,12 +6,14 @@ pub mod eq;
 pub mod sdam;
 pub mod server_selection;
 
-use rustc_serialize::json::Object;
+// use rustc_serialize::json::Object;
+use serde_json::Map;
+use serde_json::Value as Json;
 
 pub trait FromJson: Sized {
-    fn from_json(object: &Object) -> Self;
+    fn from_json(object: &Map<String, Json>) -> Self;
 }
 
 pub trait FromJsonResult: Sized {
-    fn from_json(object: &Object) -> Result<Self, String>;
+    fn from_json(object: &Map<String, Json>) -> Result<Self, String>;
 }

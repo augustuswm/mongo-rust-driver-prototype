@@ -1,12 +1,14 @@
 use mongodb::common::{ReadMode, ReadPreference};
-use rustc_serialize::json::{Json, Object};
+// use rustc_serialize::json::{Json, Object};
+use serde_json::Map;
+use serde_json::Value as Json;
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
 use super::super::FromJsonResult;
 
 impl FromJsonResult for ReadPreference {
-    fn from_json(object: &Object) -> Result<ReadPreference, String> {
+    fn from_json(object: &Map<String, Json>) -> Result<ReadPreference, String> {
         let mode = val_or_err!(object.get("mode"),
                                Some(&Json::String(ref s)) => ReadMode::from_str(s).unwrap(),
                                "read preference must have a mode.");
