@@ -116,8 +116,8 @@ fn get_tests(object: &Map<String, Json>) -> Result<Vec<Test>, String> {
     Ok(tests)
 }
 
-pub trait SuiteContainer {
-    fn from_file(path: &str) -> Result<Json, String>;
+pub trait SuiteContainer : Sized {
+    fn from_file(path: &str) -> Result<Self, String>;
     fn get_suite(&self) -> Result<Suite, String>;
 }
 
