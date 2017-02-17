@@ -6,7 +6,6 @@ use mongodb::topology::{TopologyDescription, TopologyType};
 use mongodb::topology::server::Server;
 
 use json::server_selection::reader::SuiteContainer;
-// use rustc_serialize::json::Json;
 use serde_json::Value as Json;
 use std::sync::{Arc, RwLock};
 

@@ -3,7 +3,6 @@ use json::FromJsonResult;
 use mongodb::common::ReadPreference;
 use mongodb::topology::TopologyType;
 
-// use rustc_serialize::json::Json;
 use serde_json;
 use serde_json::Value as Json;
 

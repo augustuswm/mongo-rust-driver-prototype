@@ -1,7 +1,6 @@
 use bson;
 use bson::{Bson, Document};
 use mongodb::connstring::{self, Host};
-// use rustc_serialize::json::Json;
 use serde_json::Value as Json;
 
 pub struct Responses {

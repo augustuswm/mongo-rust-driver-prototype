@@ -2,7 +2,6 @@ use mongodb::connstring::{self, Host};
 use mongodb::topology::TopologyType;
 use mongodb::topology::server::ServerType;
 
-// use rustc_serialize::json::{Json, Object};
 use serde_json::Map;
 use serde_json::Value as Json;
 use std::collections::HashMap;

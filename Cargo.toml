@@ -26,7 +26,6 @@ data-encoding = "1.1.2"
 openssl = { version = "0.9.3", optional = true }
 rand = "0.3.14"
 rust-crypto = "0.2.31"
-rustc-serialize = "0.3.19"
 scan_fmt = "0.1.0"
 semver = "0.5.0"
 separator = "0.3.1"

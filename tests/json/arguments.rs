@@ -3,7 +3,6 @@ use bson::{Bson, Document};
 use json::options::FromJson;
 use mongodb::coll::options::{AggregateOptions, CountOptions, FindOneAndDeleteOptions,
                              FindOneAndUpdateOptions, FindOptions};
-// use rustc_serialize::json::Object;
 use serde_json::Map;
 use serde_json::Value as Json;
 

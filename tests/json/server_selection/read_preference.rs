@@ -1,5 +1,4 @@
 use mongodb::common::{ReadMode, ReadPreference};
-// use rustc_serialize::json::{Json, Object};
 use serde_json::Map;
 use serde_json::Value as Json;
 use std::collections::BTreeMap;

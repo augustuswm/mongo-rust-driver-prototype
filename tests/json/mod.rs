@@ -6,7 +6,6 @@ pub mod eq;
 pub mod sdam;
 pub mod server_selection;
 
-// use rustc_serialize::json::Object;
 use serde_json::Map;
 use serde_json::Value as Json;
 

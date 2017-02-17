@@ -5,7 +5,6 @@ use json::FromJson;
 use mongodb::coll::options::{AggregateOptions, CountOptions, FindOneAndDeleteOptions,
                              FindOneAndUpdateOptions, FindOptions, ReturnDocument};
 
-// use rustc_serialize::json::{Object, Json};
 use serde_json::Map;
 use serde_json::Value as Json;
 

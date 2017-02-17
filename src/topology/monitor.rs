@@ -192,8 +192,8 @@ impl IsMasterResult {
             result.hidden = *h;
         }
 
-        if let Some(&Bson::I64(v)) = doc.get("setVersion") {
-            result.set_version = Some(v);
+        if let Some(&Bson::FloatingPoint(v)) = doc.get("setVersion") {
+            result.set_version = Some(v as i64);
         }
 
         if let Some(&Bson::Document(ref doc)) = doc.get("tags") {
